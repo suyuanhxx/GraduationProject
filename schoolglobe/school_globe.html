@@ -33,7 +33,7 @@
 <script type="text/javascript" src="../js/data/coast.js"></script>
 <script type="text/javascript" src="../js/data/location.js"></script>
 <script type="text/javascript" src="../js/data/country.js"></script>
-<script type="text/javascript" src="../js/loadMesh.js"></script>
+<script type="text/javascript" src="../js/loadMesh2.js"></script>
 <script type="text/javascript" src="school_globe.js"></script>
 <script type="text/javascript">
 
@@ -42,8 +42,23 @@
     } else {
         var container = document.getElementById('container');
         var globe = new DAT.Globe(container);
-        var data = getCountry();
-        globe.animate();
+
+        xhr = new XMLHttpRequest();
+        xhr.open('GET', './school.json', true);
+
+        xhr.onreadystatechange = function(e) {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    window.data = data;
+                    globe.addData(data,{format:'magnitude'});
+                    globe.createPoints();
+                    globe.animate();
+                    document.body.style.backgroundImage = 'none'; // remove loading
+                }
+            }
+        };
+        xhr.send(null);
     }
 
 </script>
