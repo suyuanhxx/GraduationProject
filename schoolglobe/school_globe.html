@@ -44,14 +44,14 @@
         var globe = new DAT.Globe(container);
 
         xhr = new XMLHttpRequest();
-        xhr.open('GET', './school.json', true);
+        xhr.open('GET', './school2.json', true);
 
         xhr.onreadystatechange = function(e) {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     var data = JSON.parse(xhr.responseText);
                     window.data = data;
-                    globe.addData(data,{format:'magnitude'});
+                        globe.addData(data, {format: 'magnitude'});
                     globe.createPoints();
                     globe.animate();
                     document.body.style.backgroundImage = 'none'; // remove loading

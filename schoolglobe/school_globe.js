@@ -210,7 +210,7 @@ DAT.Globe = function(container, opts) {
             overRenderer = true;
         }, false);
 
-        //container.addEventListener('mousemove',onMouseMove,false);
+        container.addEventListener('mousemove',onMouseMove,false);
 
         container.addEventListener('mouseout', function() {
             overRenderer = false;
@@ -262,7 +262,6 @@ DAT.Globe = function(container, opts) {
         var lat, lng, size, color, i, step, colorFnWrapper;
 
         opts.animated = opts.animated || false;
-        console.log(opts.animated);
         this.is_animated = opts.animated;
         opts.format = opts.format || 'magnitude'; // other option is 'legend'
         if (opts.format === 'magnitude') {
@@ -278,10 +277,11 @@ DAT.Globe = function(container, opts) {
         if (opts.animated) {
             if (this._baseGeometry === undefined) {
                 this._baseGeometry = new THREE.Geometry();
+                console.log(data.length);
                 for (i = 0; i < data.length; i += step) {
                     lat = data[i];
                     lng = data[i + 1];
-//        size = data[i + 2];
+                    //size = data[i + 2];
                     color = colorFnWrapper(data,i);
                     size = 0;
                     addPoint(lat, lng, size, color, this._baseGeometry);
@@ -300,7 +300,7 @@ DAT.Globe = function(container, opts) {
             lng = data[i + 1];
             color = colorFnWrapper(data,i);
             size = data[i + 2];
-            size = size*200;
+            size = size*250;
             addPoint(lat, lng, size, color, subgeo);
         }
         if (opts.animated) {
@@ -321,11 +321,11 @@ DAT.Globe = function(container, opts) {
                 }));
             } else {
                 if (this._baseGeometry.morphTargets.length < 8) {
-                    console.log('t l',this._baseGeometry.morphTargets.length);
+                    //console.log('t l',this._baseGeometry.morphTargets.length);
                     var padding = 8-this._baseGeometry.morphTargets.length;
-                    console.log('padding', padding);
+                    //console.log('padding', padding);
                     for(var i=0; i<=padding; i++) {
-                        console.log('padding',i);
+                        //console.log('padding',i);
                         this._baseGeometry.morphTargets.push({'name': 'morphPadding'+i, vertices: this._baseGeometry.vertices});
                     }
                 }
@@ -362,37 +362,7 @@ DAT.Globe = function(container, opts) {
         THREE.GeometryUtils.merge(subgeo, point);
     }
 
-    function onMouseDown(event) {
-        event.preventDefault();
-
-        container.addEventListener('mousemove', onMouseMove, false);
-        container.addEventListener('mouseup', onMouseUp, false);
-        container.addEventListener('mouseout', onMouseOut, false);
-
-        mouseOnDown.x = - event.clientX;
-        mouseOnDown.y = event.clientY;
-
-        targetOnDown.x = target.x;
-        targetOnDown.y = target.y;
-
-        container.style.cursor = 'move';
-    }
-
-    function onMouseMove(event) {
-        mouse.x = - event.clientX;
-        mouse.y = event.clientY;
-
-        var zoomDamp = distance/1000;
-
-        target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
-        target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
-
-        target.y = target.y > PI_HALF ? PI_HALF : target.y;
-        target.y = target.y < - PI_HALF ? - PI_HALF : target.y;
-
-        placeCountryLabel(event.clientX, event.clientY);
-    }
-
+    ///////////////////////////////////
     var countryLabel = window.document.createElement("label");
     var hoveredCountry;
     function placeCountryLabel (x, y) {
@@ -472,7 +442,39 @@ DAT.Globe = function(container, opts) {
             return country;
         }
     };
+
     ////////////////////////////
+    function onMouseDown(event) {
+        event.preventDefault();
+
+        container.addEventListener('mousemove', onMouseMove, false);
+        container.addEventListener('mouseup', onMouseUp, false);
+        container.addEventListener('mouseout', onMouseOut, false);
+
+        mouseOnDown.x = - event.clientX;
+        mouseOnDown.y = event.clientY;
+
+        targetOnDown.x = target.x;
+        targetOnDown.y = target.y;
+
+        container.style.cursor = 'move';
+    }
+
+    function onMouseMove(event) {
+
+        mouse.x = - event.clientX;
+        mouse.y = event.clientY;
+
+        var zoomDamp = distance/1000;
+
+        target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
+        target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
+
+        target.y = target.y > PI_HALF ? PI_HALF : target.y;
+        target.y = target.y < - PI_HALF ? - PI_HALF : target.y;
+
+        placeCountryLabel(event.clientX, event.clientY);
+    }
 
     function onMouseUp(event) {
         container.removeEventListener('mousemove', onMouseMove, false);
